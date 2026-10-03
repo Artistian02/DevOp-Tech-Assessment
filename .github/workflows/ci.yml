@@ -155,6 +155,7 @@ jobs:
             -p 8080:8080 \
             -e APP_VERSION=${{ github.sha }} \
             ghcr.io/artistian02/orderservice:${{ github.sha }}
-
       - name: Check version
-        run: curl http://localhost:8080/version
+        run: |
+          sleep 5
+          curl http://localhost:8080/version
