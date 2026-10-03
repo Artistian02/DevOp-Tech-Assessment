@@ -121,10 +121,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build image
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/orderservice:${{ github.sha }} .
+        run: docker build -t ghcr.io/artistian02/orderservice:${{ github.sha }} .
 
       - name: Push image
-        run: docker push ghcr.io/${{ github.repository_owner }}/orderservice:${{ github.sha }}
+        run: docker push ghcr.io/artistian02/orderservice:${{ github.sha }}
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
