@@ -92,7 +92,10 @@ jobs:
         run: docker build -t orderservice:${{ github.sha }} .
 
       - name: Install Trivy
-        uses: aquasecurity/setup-trivy@v0.2.4
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget
+          wget -qO- https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
 
       - name: Scan Docker image
         run: trivy image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 orderservice:${{ github.sha }}
