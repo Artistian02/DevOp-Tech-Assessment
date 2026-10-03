@@ -132,5 +132,29 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-      - name: Deployment placeholder
-        run: echo "Deployment job will pull and run the GHCR image."
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull image
+        run: docker pull ghcr.io/artistian02/orderservice:${{ github.sha }}
+
+      - name: Stop old container
+        run: docker stop orderservice || true
+
+      - name: Remove old container
+        run: docker rm orderservice || true
+
+      - name: Run container
+        run: |
+          docker run -d \
+            --name orderservice \
+            -p 8080:8080 \
+            -e APP_VERSION=${{ github.sha }} \
+            ghcr.io/artistian02/orderservice:${{ github.sha }}
+
+      - name: Check version
+        run: curl http://localhost:8080/version
