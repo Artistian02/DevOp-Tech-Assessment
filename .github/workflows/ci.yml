@@ -38,7 +38,6 @@ jobs:
   build-test:
     name: Build and Test
     runs-on: ubuntu-latest
-    needs: format
 
     steps:
       - name: Checkout code
@@ -61,7 +60,6 @@ jobs:
   dependency-scan:
     name: Dependency Security Scan
     runs-on: ubuntu-latest
-    needs: build-test
 
     steps:
       - name: Checkout code
@@ -81,19 +79,22 @@ jobs:
   docker:
     name: Docker
     runs-on: ubuntu-latest
-    needs: dependency-scan
+    needs:
+      - format
+      - build-test
+      - dependency-scan
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build Docker
+      - name: Build Docker image
         run: docker build -t orderservice:${{ github.sha }} .
 
       - name: Install Trivy
-        uses: aquasecurity/setup-trivy@v0.2.3
+        uses: aquasecurity/setup-trivy@v0.2.4
 
-      - name: Scan Docker
+      - name: Scan Docker image
         run: trivy image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 orderservice:${{ github.sha }}
 
   push-image:
